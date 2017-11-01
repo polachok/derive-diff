@@ -28,7 +28,7 @@ fn impl_diff(ast: &syn::DeriveInput) -> quote::Tokens {
     }
 }
 
-/// Generates diff for each struct field
+/// Generates Diff for each struct field
 struct StructGenerator<'a> {
     fields: &'a [syn::Field]
 }
@@ -59,6 +59,7 @@ impl<'a> quote::ToTokens for StructGenerator<'a> {
     }
 }
 
+/// Generates Diff impl for enum fields
 struct FieldGenerator<'a> {
     name: &'a syn::Ident,
     fields: &'a [syn::Field],
@@ -122,6 +123,7 @@ impl<'a> quote::ToTokens for StructPatField<'a> {
     }
 }
 
+/// Implements Diff for enum
 fn impl_diff_enum(name: &syn::Ident, variants: &[syn::Variant]) -> quote::Tokens {
     let mut differs = Vec::new();
     for variant in variants {
@@ -197,7 +199,7 @@ fn impl_diff_enum(name: &syn::Ident, variants: &[syn::Variant]) -> quote::Tokens
     }
 }
 
-/// Implements diff for structs
+/// Implements Diff for structs
 fn impl_diff_struct(name: &syn::Ident, struct_: &syn::VariantData) -> quote::Tokens {
     match struct_ {
         &syn::VariantData::Struct(ref fields) | &syn::VariantData::Tuple(ref fields) => {
@@ -219,12 +221,5 @@ fn impl_diff_struct(name: &syn::Ident, struct_: &syn::VariantData) -> quote::Tok
             /* only structs and tuples are supported for now */
             panic!("Support for {:?} not implemented", v);
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
     }
 }
