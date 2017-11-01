@@ -3,10 +3,12 @@ extern crate chrono;
 use std::fmt;
 use chrono::DateTime;
 
+/// Trait for types that are diffable
 pub trait Diff where Self: PartialEq + std::fmt::Debug {
     fn diff(&self, other: &Self) -> Option<Vec<Difference>>;
 }
 
+/// Field that differs
 #[derive(Debug)]
 pub struct Difference {
     pub field: String,
@@ -98,10 +100,3 @@ impl_for_prim!(char);
 impl_for_prim!(str);
 impl_for_prim!(String);
 impl_for_prim!(chrono::NaiveDateTime);
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-    }
-}
