@@ -2,11 +2,9 @@
 extern crate derive_diff;
 extern crate struct_diff;
 
-use struct_diff::{Diff, Difference};
-
 #[cfg(test)]
 mod tests {
-    use struct_diff::{self, Diff, Difference};
+    use struct_diff::{Diff, Difference};
 
     #[test]
     fn same() {
@@ -154,7 +152,7 @@ mod tests {
     #[test]
     fn enums_4() {
         #[derive(Debug, PartialEq, Diff)]
-        struct A {
+        pub struct A {
             a: String,
         }
         #[derive(Debug, PartialEq, Diff)]

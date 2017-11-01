@@ -28,8 +28,8 @@ fn impl_diff(ast: &syn::DeriveInput) -> quote::Tokens {
     }
 }
 
+/// Generates diff for each struct field
 struct StructGenerator<'a> {
-    name: &'a syn::Ident,
     fields: &'a [syn::Field]
 }
 
@@ -197,10 +197,11 @@ fn impl_diff_enum(name: &syn::Ident, variants: &[syn::Variant]) -> quote::Tokens
     }
 }
 
+/// Implements diff for structs
 fn impl_diff_struct(name: &syn::Ident, struct_: &syn::VariantData) -> quote::Tokens {
     match struct_ {
         &syn::VariantData::Struct(ref fields) | &syn::VariantData::Tuple(ref fields) => {
-            let gen = StructGenerator { name, fields };
+            let gen = StructGenerator { fields };
             return quote! {
                 impl Diff for #name {
                     fn diff(&self, other: &#name) -> Option<Vec<Difference>> {
@@ -215,8 +216,8 @@ fn impl_diff_struct(name: &syn::Ident, struct_: &syn::VariantData) -> quote::Tok
             }
         },
         v@_ => {
-            panic!("{:?}", v);
-            unimplemented!()
+            /* only structs and tuples are supported for now */
+            panic!("Support for {:?} not implemented", v);
         }
     }
 }

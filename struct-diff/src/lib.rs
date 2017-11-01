@@ -1,6 +1,5 @@
 extern crate chrono;
 
-use std::fmt;
 use chrono::DateTime;
 
 /// Trait for types that are diffable
