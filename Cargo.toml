@@ -1,0 +1,12 @@
+[package]
+name = "derive-diff"
+version = "0.1.0"
+authors = ["Alexander Polyakov <aleksandr.polyakov@kupibilet.ru>"]
+
+[dependencies]
+syn = "0.11"
+quote = "0.3"
+struct-diff = { path = "./struct-diff" }
+
+[lib]
+proc-macro = true

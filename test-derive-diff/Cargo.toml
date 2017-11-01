@@ -1,0 +1,8 @@
+[package]
+name = "test-derive-diff"
+version = "0.1.0"
+authors = ["Alexander Polyakov <aleksandr.polyakov@kupibilet.ru>"]
+
+[dependencies]
+derive-diff = { path = "../../derive-diff" }
+struct-diff = { path = "../struct-diff" }
