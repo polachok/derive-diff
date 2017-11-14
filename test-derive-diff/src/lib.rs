@@ -2,6 +2,13 @@
 extern crate derive_diff;
 extern crate struct_diff;
 
+use struct_diff::{Diff, Difference};
+
+#[derive(Debug, PartialEq, Diff)]
+struct A {
+    key: String,
+}
+
 #[cfg(test)]
 mod tests {
     use struct_diff::{Diff, Difference};
@@ -24,7 +31,8 @@ mod tests {
         }
         let a = A { key: "hello".into() };
         let b = A { key: "world".into() };
-        assert_eq!(a.diff(&b).unwrap()[0].field, "key".to_string());
+        let diff = a.diff(&b).unwrap();
+        assert_eq!(diff[0].field, "key".to_string());
     }
 
     #[test]
@@ -41,19 +49,24 @@ mod tests {
 
         let a = A { b: B { val: 5 }};
         let b = A { b: B { val: 6 }};
-        println!("{:?}", a.diff(&b).unwrap()[0].field);
-        assert_eq!(a.diff(&b).unwrap()[0].field, "b.val");
+        let diff = a.diff(&b).unwrap();
+        assert_eq!(diff[0].field, "b.val");
     }
 
     #[test]
     fn arrays() {
+        /*
         #[derive(Debug, PartialEq, Diff)]
         struct A {
             v: [u8; 3]
         }
-        let a = A { v: [5, 6, 8] };
-        let b = A { v: [5, 7, 8] };
-        assert_eq!(a.diff(&b).unwrap()[0].field, "v.[1]");
+        */
+        let a = [5, 6, 8u8];
+        let b = [5, 7, 8];
+        let aa = a.as_ref();
+        let bb = b.as_ref();
+        let diff = aa.diff(&bb);
+        assert_eq!(diff, Some(vec![Difference { field: "ab".to_owned(), left: &1, right: &2 }]));
     }
 
     #[test]
@@ -83,18 +96,18 @@ mod tests {
         assert_eq!(diff.len(), 2);
     }
 
-/*
-    #[test]
-    fn vecs_len() {
-        #[derive(Debug, PartialEq, Diff)]
-        struct A {
-            v: Vec<u8>,
-        }
-        let a = A { v: vec![5, 7] };
-        let b = A { v: vec![5, 7, 8] };
-        assert_eq!(a.diff(&b).unwrap()[0].field, "v.{length}");
-    }
-    */
+
+//    #[test]
+//    fn vecs_len() {
+//        #[derive(Debug, PartialEq, Diff)]
+//        struct A {
+//            v: Vec<u8>,
+//        }
+//        let a = A { v: vec![5, 7] };
+//        let b = A { v: vec![5, 7, 8] };
+//        assert_eq!(a.diff(&b).unwrap()[0].field, "v.{length}");
+//    }
+
 
     #[test]
     fn enums_1() {

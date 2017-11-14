@@ -49,6 +49,8 @@ impl<'a> quote::ToTokens for StructGenerator<'a> {
                                 path.push_str(&diff.field);
                                 diffs.push(::struct_diff::Difference {
                                     field: path,
+                                    left: &self.#field_name,
+                                    right: &other.#field_name
                                 })
                             }
                         }
@@ -94,6 +96,8 @@ impl<'a> quote::ToTokens for FieldGenerator<'a> {
                             path.push_str(&diff.field);
                             diffs.push(::struct_diff::Difference {
                                 field: path,
+                                left: #left,
+                                right: #right,
                             })
                         }
                     }
@@ -182,12 +186,13 @@ fn impl_diff_enum(name: &syn::Ident, variants: &[syn::Variant]) -> quote::Tokens
     }
     return quote! {
         impl Diff for #name {
-            fn diff(&self, other: &#name) -> Option<Vec<Difference>> {
+
+            fn diff<'a>(&'a self, other: &'a #name) -> Option<Vec<Difference<'a>>> {
                 let mut diffs = Vec::new();
                 match (self, other) {
                     #(#differs),*
                     _ => {
-                        return Some(vec![Difference { field: "self".into() }]);
+                        return Some(vec![Difference { field: "self".into(), left: self, right: other }]);
                     }
                 }
                 if diffs.len() > 0 {
@@ -206,7 +211,7 @@ fn impl_diff_struct(name: &syn::Ident, struct_: &syn::VariantData) -> quote::Tok
             let gen = StructGenerator { fields };
             return quote! {
                 impl Diff for #name {
-                    fn diff(&self, other: &#name) -> Option<Vec<Difference>> {
+                    fn diff<'a>(&'a self, other: &'a #name) -> Option<Vec<Difference<'a>>> {
                         let mut diffs = Vec::new();
                         #gen
                         if diffs.len() > 0 {

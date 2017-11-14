@@ -1,25 +1,30 @@
+#![feature(associated_type_defaults)]
 extern crate chrono;
 
 use chrono::DateTime;
+use std::fmt::Debug;
 
-/// Trait for types that are diffable
-pub trait Diff where Self: PartialEq + std::fmt::Debug {
-    fn diff(&self, other: &Self) -> Option<Vec<Difference>>;
+pub trait Diff: Debug + PartialEq {
+    fn diff<'a>(&'a self, other: &'a Self) -> Option<Vec<Difference<'a>>>;
 }
 
 /// Field that differs
 #[derive(Debug)]
-pub struct Difference {
+pub struct Difference<'a> {
     pub field: String,
+    pub left: &'a Debug,
+    pub right: &'a Debug,
 }
 
 macro_rules! impl_for_prim {
     ($t: ty) => {
         impl Diff for $t {
-            fn diff(&self, other: &Self) -> Option<Vec<Difference>> {
+            fn diff<'a>(&'a self, other: &'a Self) -> Option<Vec<Difference<'a>>> {
                 if self != other {
                     return Some(vec![Difference {
                         field: String::new(),
+                        left: self,
+                        right: other,
                     }]);
                 }
                 None
@@ -28,36 +33,55 @@ macro_rules! impl_for_prim {
     };
 }
 
-impl<T: chrono::TimeZone> Diff for DateTime<T> {
-    fn diff(&self, other: &Self) -> Option<Vec<Difference>> {
+
+
+impl<'b> Diff for &'b str {
+    fn diff<'a>(&'a self, other: &'a Self) -> Option<Vec<Difference<'a>>> {
         if self != other {
             return Some(vec![Difference {
                 field: String::new(),
+                left: self,
+                right: other,
+            }])
+        }
+        None
+    }
+}
+
+impl<T: chrono::TimeZone> Diff for DateTime<T> {
+    fn diff<'a>(&'a self, other: &'a Self) -> Option<Vec<Difference<'a>>> {
+        if self != other {
+            return Some(vec![Difference {
+                field: String::new(),
+                left: self,
+                right: other,
             }]);
         }
         None
     }
 }
 
+
 impl<T> Diff for Option<T> where T: std::fmt::Debug + PartialEq + Diff {
-    fn diff(&self, other: &Self) -> Option<Vec<Difference>> {
+    fn diff<'a>(&'a self, other: &'a Self) -> Option<Vec<Difference<'a>>> {
         match (self, other) {
-            (&Some(ref val), &Some(ref other)) => {
-                val.diff(other)
+            (&Some(ref left), &Some(ref right)) => {
+                left.diff(right)
             }
             (&None, &Some(_)) => {
-                Some(vec![Difference { field: format!("none") }])
+                Some(vec![Difference { field: format!("none"), left: self, right: other }])
             },
             (&Some(_), &None) => {
-                Some(vec![Difference { field: format!("some") }])
+                Some(vec![Difference { field: format!("some"), left: self, right: other }])
             },
             (&None, &None) => None,
         }
     }
 }
 
-impl<T> Diff for [T] where T: std::fmt::Debug + PartialEq + Diff {
-    fn diff(&self, other: &Self) -> Option<Vec<Difference>> {
+
+impl<T> Diff for [T] where T: Diff {
+    fn diff<'a>(&'a self, other: &'a Self) -> Option<Vec<Difference<'a>>> {
         if self != other {
             let mut diffs = Vec::new();
             for (i, (left, right)) in self.iter().zip(other.iter()).enumerate() {
@@ -70,6 +94,8 @@ impl<T> Diff for [T] where T: std::fmt::Debug + PartialEq + Diff {
                         path.push_str(&diff.field);
                         diffs.push(Difference {
                             field: path,
+                            left,
+                            right,
                         });
                     }
                 }
@@ -96,6 +122,5 @@ impl_for_prim!(u64);
 impl_for_prim!(f32);
 impl_for_prim!(f64);
 impl_for_prim!(char);
-impl_for_prim!(str);
 impl_for_prim!(String);
 impl_for_prim!(chrono::NaiveDateTime);
