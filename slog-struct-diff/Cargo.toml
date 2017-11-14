@@ -1,12 +1,14 @@
 [package]
-name = "struct-diff"
+name = "slog-struct-diff"
 version = "0.1.0"
 authors = ["Alexander Polyakov <aleksandr.polyakov@kupibilet.ru>"]
 description = "Trait for types that are diffable"
 license = "MIT"
-documentation = "https://docs.rs/struct-diff"
+documentation = "https://docs.rs/slog-struct-diff"
 repository = "https://github.com/polachok/derive-diff"
 keywords = ["diff"]
 
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }
+slog = "2.0.12"
+struct-diff = { path = "../struct-diff" }
