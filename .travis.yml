@@ -6,3 +6,4 @@ rust:
 cache: cargo
 script:
   - cd test-derive-diff && cargo build --verbose && cargo test --verbose
+  - cd ../slog-struct-diff && cargo build --verbose && cargo test --verbose
