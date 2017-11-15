@@ -11,4 +11,4 @@ keywords = ["diff"]
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }
 slog = "2.0.12"
-struct-diff = { path = "../struct-diff" }
+struct-diff = { "0.2" }
