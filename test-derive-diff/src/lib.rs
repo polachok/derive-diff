@@ -55,18 +55,29 @@ mod tests {
 
     #[test]
     fn arrays() {
-        /*
+
         #[derive(Debug, PartialEq, Diff)]
         struct A {
             v: [u8; 3]
         }
-        */
-        let a = [5, 6, 8u8];
-        let b = [5, 7, 8];
-        let aa = a.as_ref();
-        let bb = b.as_ref();
-        let diff = aa.diff(&bb);
-        assert_eq!(diff, Some(vec![Difference { field: "ab".to_owned(), left: &1, right: &2 }]));
+
+        let a = A { v: [1,2,4] };
+        let b = A { v: [2,2,3] };
+
+        let diff = &a.diff(&b).unwrap();
+        assert_eq!(diff[0].field, "v.[0]");
+        assert_eq!(format!("{:?}", diff[0].left).as_str(), "1");
+        assert_eq!(format!("{:?}", diff[0].right).as_str(), "2");
+    }
+
+    #[test]
+    fn arrays_2() {
+        let a = [1,2,3];
+        let b = [2,2,3];
+        let diff = &a.diff(&b).unwrap()[0];
+        assert_eq!(diff.field, "[0]");
+        assert_eq!(format!("{:?}", diff.left).as_str(), "1");
+        assert_eq!(format!("{:?}", diff.right).as_str(), "2");
     }
 
     #[test]
