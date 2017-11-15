@@ -1,8 +1,8 @@
 [package]
 name = "slog-struct-diff"
 version = "0.1.0"
-authors = ["Alexander Polyakov <aleksandr.polyakov@kupibilet.ru>"]
-description = "Trait for types that are diffable"
+authors = ["Galimov Arsen Gareginovich <loomaclin@yandex.ru>"]
+description = "Slog adapter for diff"
 license = "MIT"
 documentation = "https://docs.rs/slog-struct-diff"
 repository = "https://github.com/polachok/derive-diff"
