@@ -1,4 +1,3 @@
-#![feature(associated_type_defaults)]
 extern crate chrono;
 
 use chrono::DateTime;
