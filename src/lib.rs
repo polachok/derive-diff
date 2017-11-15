@@ -49,8 +49,8 @@ impl<'a> quote::ToTokens for StructGenerator<'a> {
                                 path.push_str(&diff.field);
                                 diffs.push(::struct_diff::Difference {
                                     field: path,
-                                    left: &self.#field_name,
-                                    right: &other.#field_name
+                                    left: diff.left,
+                                    right: diff.right,
                                 })
                             }
                         }
