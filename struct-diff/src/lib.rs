@@ -93,8 +93,8 @@ impl<T> Diff for [T] where T: Diff {
                         path.push_str(&diff.field);
                         diffs.push(Difference {
                             field: path,
-                            left,
-                            right,
+                            left: diff.left,
+                            right: diff.right,
                         });
                     }
                 }
