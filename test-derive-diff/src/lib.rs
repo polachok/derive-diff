@@ -192,4 +192,27 @@ mod tests {
         assert_eq!(a.diff(&b).unwrap()[0].field, "C.c_vec.[0].S.t_vec.[0].a");
         assert_eq!(a.diff(&c).unwrap()[0].field, "self");
     }
+
+    #[test]
+    fn inner_structs() {
+        #[derive(Debug, PartialEq, Diff)]
+        pub struct A {
+            a: B,
+        }
+        #[derive(Debug, PartialEq, Diff)]
+        pub struct B {
+            a: Vec<C>,
+        }
+        #[derive(Debug, PartialEq, Diff)]
+        pub struct C {
+            a: String,
+        }
+
+        let a = A { a: B { a: vec![C { a: "the end".to_owned() }]}};
+        let b = A { a: B { a: vec![C { a: "20th century fox".to_owned() }]}};
+        let diffs = a.diff(&b).unwrap();
+        assert_eq!(diffs[0].field, "a.a.[0].a".to_owned());
+        assert_eq!(format!("{:?}", diffs[0].left), format!("{:?}", "the end".to_owned()));
+        assert_eq!(format!("{:?}", diffs[0].right), format!("{:?}", "20th century fox".to_owned()));
+    }
 }
