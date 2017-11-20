@@ -215,4 +215,43 @@ mod tests {
         assert_eq!(format!("{:?}", diffs[0].left), format!("{:?}", "the end".to_owned()));
         assert_eq!(format!("{:?}", diffs[0].right), format!("{:?}", "20th century fox".to_owned()));
     }
+
+    #[test]
+    fn inner_vector_structs_and_enums() {
+        #[derive(Debug, PartialEq, Diff)]
+        pub struct A {
+            a: B,
+        }
+        #[derive(Debug, PartialEq, Diff)]
+        pub enum B {
+            First(Vec<C>),
+            Second(String),
+        }
+        #[derive(Debug, PartialEq, Diff)]
+        pub struct C {
+            a: D,
+            b: String,
+        }
+
+        #[derive(Debug, PartialEq, Diff)]
+        pub struct D {
+            a: Vec<E>,
+        }
+
+        #[derive(Debug, PartialEq, Diff)]
+        pub struct E {
+            a: String,
+        }
+
+
+        let a = A { a: B::First(vec![C { a: D { a: vec![E{ a: "the end".to_owned() }]}, b: "c struct b field 1".to_owned() }])};
+        let b = A { a: B::First(vec![C { a: D { a: vec![E{ a: "20th century fox".to_owned() }]}, b: "c struct b field 2".to_owned()}])};
+        let diffs = a.diff(&b).unwrap();
+        assert_eq!(diffs[0].field, "a.First.0.[0].a.a.[0].a".to_owned());
+        assert_eq!(diffs[1].field, "a.First.0.[0].b".to_owned());
+        assert_eq!(format!("{:?}", diffs[0].left), format!("{:?}", "the end".to_owned()));
+        assert_eq!(format!("{:?}", diffs[0].right), format!("{:?}", "20th century fox".to_owned()));
+        assert_eq!(format!("{:?}", diffs[1].left), format!("{:?}", "c struct b field 1".to_owned()));
+        assert_eq!(format!("{:?}", diffs[1].right), format!("{:?}", "c struct b field 2".to_owned()));
+    }
 }

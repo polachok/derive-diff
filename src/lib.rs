@@ -96,8 +96,8 @@ impl<'a> quote::ToTokens for FieldGenerator<'a> {
                             path.push_str(&diff.field);
                             diffs.push(::struct_diff::Difference {
                                 field: path,
-                                left: #left,
-                                right: #right,
+                                left: diff.left,
+                                right: diff.right,
                             })
                         }
                     }
