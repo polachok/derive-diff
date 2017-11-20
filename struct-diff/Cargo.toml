@@ -1,6 +1,6 @@
 [package]
 name = "struct-diff"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Alexander Polyakov <aleksandr.polyakov@kupibilet.ru>"]
 description = "Trait for types that are diffable"
 license = "MIT"

@@ -1,6 +1,6 @@
 [package]
 name = "derive-diff"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Alexander Polyakov <aleksandr.polyakov@kupibilet.ru>"]
 description = "Procedural macro to derive Diff implementation"
 license = "MIT"
@@ -11,7 +11,7 @@ keywords = ["diff"]
 [dependencies]
 syn = "0.11"
 quote = "0.3"
-struct-diff = "0.2.1"
+struct-diff = "0.2.2"
 
 [lib]
 proc-macro = true
