@@ -1,6 +1,6 @@
 [package]
 name = "derive-diff"
-version = "0.2.3"
+version = "0.2.4"
 authors = ["Alexander Polyakov <aleksandr.polyakov@kupibilet.ru>"]
 description = "Procedural macro to derive Diff implementation"
 license = "MIT"
