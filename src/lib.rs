@@ -189,11 +189,11 @@ fn impl_diff_enum(name: &syn::Ident, variants: &[syn::Variant]) -> quote::Tokens
 
             #[allow(unreachable_patterns)]
             fn diff<'a>(&'a self, other: &'a #name) -> Option<Vec<Difference<'a>>> {
-                let mut diffs = Vec::new();
+                let mut diffs = Vec::with_capacity(1);
                 match (self, other) {
                     #(#differs),*
                     _ => {
-                        return Some(vec![Difference { field: "self".into(), left: self, right: other }]);
+                        diffs.push(Difference { field: "self".into(), left: self, right: other });
                     }
                 }
                 if diffs.len() > 0 {
@@ -205,11 +205,59 @@ fn impl_diff_enum(name: &syn::Ident, variants: &[syn::Variant]) -> quote::Tokens
     }
 }
 
+/// Generates Diff impl for enum fields
+struct TupleFieldsGenerator<'a> {
+    fields: &'a [syn::Field],
+}
+
+impl<'a> quote::ToTokens for TupleFieldsGenerator<'a> {
+    fn to_tokens(&self, tokens: &mut quote::Tokens) {
+        for (field_name, _) in self.fields.iter().enumerate() {
+                let field_name_s = field_name.to_string();
+                use quote::Ident;
+                let field_name = Ident::new(format!("{}", field_name));
+                tokens.append(
+                    quote!{
+                        if let Some(inner_diffs) = self.#field_name.diff(&other.#field_name) {
+                            for diff in inner_diffs {
+                                let mut path = String::from(#field_name_s);
+                                if !diff.field.is_empty() {
+                                    path.push_str(&".");
+                                }
+                                path.push_str(&diff.field);
+                                diffs.push(::struct_diff::Difference {
+                                    field: path,
+                                    left: diff.left,
+                                    right: diff.right,
+                                })
+                            }
+                        }
+                    }
+                );
+        }
+    }
+}
+
 /// Implements Diff for structs
 fn impl_diff_struct(name: &syn::Ident, struct_: &syn::VariantData) -> quote::Tokens {
     match struct_ {
-        &syn::VariantData::Struct(ref fields) | &syn::VariantData::Tuple(ref fields) => {
+        &syn::VariantData::Struct(ref fields) => {
             let gen = StructGenerator { fields };
+            return quote! {
+                impl Diff for #name {
+                    fn diff<'a>(&'a self, other: &'a #name) -> Option<Vec<Difference<'a>>> {
+                        let mut diffs = Vec::new();
+                        #gen
+                        if diffs.len() > 0 {
+                            return Some(diffs);
+                        }
+                        return None;
+                    }
+                }
+            }
+        },
+        &syn::VariantData::Tuple(ref fields) => {
+            let gen = TupleFieldsGenerator { fields };
             return quote! {
                 impl Diff for #name {
                     fn diff<'a>(&'a self, other: &'a #name) -> Option<Vec<Difference<'a>>> {

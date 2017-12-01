@@ -256,6 +256,36 @@ mod tests {
     }
 
     #[test]
+
+    fn newtype_diff() {
+        #[derive(Debug, PartialEq, Diff)]
+        pub struct A(pub String);
+
+        let a = A("a".to_owned());
+        let b = A("b".to_owned());
+        let diff = a.diff(&b).unwrap();
+        assert_eq!(diff.len(), 1);
+        assert_eq!("0".to_owned(), diff[0].field);
+        assert_eq!(format!("{:?}", diff[0].left), format!("{:?}", "a".to_owned()));
+        assert_eq!(format!("{:?}", diff[0].right), format!("{:?}", "b".to_owned()));
+    }
+
+    #[test]
+    fn inner_newtype_diff() {
+        #[derive(Debug, PartialEq, Diff)]
+        pub struct A(pub String);
+
+        #[derive(Debug, PartialEq, Diff)]
+        pub struct B(pub A);
+
+        let a = B(A("a".to_owned()));
+        let b = B(A("b".to_owned()));
+        let diff = a.diff(&b).unwrap();
+        assert_eq!(diff.len(), 1);
+        assert_eq!("0.0".to_owned(), diff[0].field);
+        assert_eq!(format!("{:?}", diff[0].left), format!("{:?}", "a".to_owned()));
+        assert_eq!(format!("{:?}", diff[0].right), format!("{:?}", "b".to_owned()));
+
     fn enum_unreachable() {
         #[derive(Diff, PartialEq, Debug)]
         enum C {
@@ -266,5 +296,6 @@ mod tests {
         let c1 = C::A { a: "pook".into() };
         let c2 = C::A { a: "pook".into() };
         c1.diff(&c2);
+
     }
 }
