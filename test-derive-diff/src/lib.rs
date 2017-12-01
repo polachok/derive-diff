@@ -254,4 +254,17 @@ mod tests {
         assert_eq!(format!("{:?}", diffs[1].left), format!("{:?}", "c struct b field 1".to_owned()));
         assert_eq!(format!("{:?}", diffs[1].right), format!("{:?}", "c struct b field 2".to_owned()));
     }
+
+    #[test]
+    fn enum_unreachable() {
+        #[derive(Diff, PartialEq, Debug)]
+        enum C {
+            A {
+                a: String,
+            }
+        }
+        let c1 = C::A { a: "pook".into() };
+        let c2 = C::A { a: "pook".into() };
+        c1.diff(&c2);
+    }
 }

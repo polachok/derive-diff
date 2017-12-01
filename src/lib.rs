@@ -15,7 +15,7 @@ pub fn generate_diff_impl(input: TokenStream) -> TokenStream {
 
     // Build the impl
     let gen = impl_diff(&ast);
-    
+
     // Return the generated impl
     gen.parse().unwrap()
 }
@@ -187,6 +187,7 @@ fn impl_diff_enum(name: &syn::Ident, variants: &[syn::Variant]) -> quote::Tokens
     return quote! {
         impl Diff for #name {
 
+            #[allow(unreachable_patterns)]
             fn diff<'a>(&'a self, other: &'a #name) -> Option<Vec<Difference<'a>>> {
                 let mut diffs = Vec::new();
                 match (self, other) {
