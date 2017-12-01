@@ -256,6 +256,7 @@ mod tests {
     }
 
     #[test]
+
     fn newtype_diff() {
         #[derive(Debug, PartialEq, Diff)]
         pub struct A(pub String);
@@ -284,5 +285,17 @@ mod tests {
         assert_eq!("0.0".to_owned(), diff[0].field);
         assert_eq!(format!("{:?}", diff[0].left), format!("{:?}", "a".to_owned()));
         assert_eq!(format!("{:?}", diff[0].right), format!("{:?}", "b".to_owned()));
+
+    fn enum_unreachable() {
+        #[derive(Diff, PartialEq, Debug)]
+        enum C {
+            A {
+                a: String,
+            }
+        }
+        let c1 = C::A { a: "pook".into() };
+        let c2 = C::A { a: "pook".into() };
+        c1.diff(&c2);
+
     }
 }
