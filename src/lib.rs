@@ -185,15 +185,15 @@ fn impl_diff_enum(name: &syn::Ident, variants: &[syn::Variant]) -> quote::Tokens
         differs.push(diff);
     }
     return quote! {
-        impl Diff for #name {
+        impl ::struct_diff::Diff for #name {
 
             #[allow(unreachable_patterns)]
-            fn diff<'a>(&'a self, other: &'a #name) -> Option<Vec<Difference<'a>>> {
+            fn diff<'a>(&'a self, other: &'a #name) -> Option<Vec<::struct_diff::Difference<'a>>> {
                 let mut diffs = Vec::with_capacity(1);
                 match (self, other) {
                     #(#differs),*
                     _ => {
-                        diffs.push(Difference { field: "self".into(), left: self, right: other });
+                        diffs.push(::struct_diff::Difference { field: "self".into(), left: self, right: other });
                     }
                 }
                 if diffs.len() > 0 {
@@ -244,8 +244,8 @@ fn impl_diff_struct(name: &syn::Ident, struct_: &syn::VariantData) -> quote::Tok
         &syn::VariantData::Struct(ref fields) => {
             let gen = StructGenerator { fields };
             return quote! {
-                impl Diff for #name {
-                    fn diff<'a>(&'a self, other: &'a #name) -> Option<Vec<Difference<'a>>> {
+                impl ::struct_diff::Diff for #name {
+                    fn diff<'a>(&'a self, other: &'a #name) -> Option<Vec<::struct_diff::Difference<'a>>> {
                         let mut diffs = Vec::new();
                         #gen
                         if diffs.len() > 0 {
@@ -259,8 +259,8 @@ fn impl_diff_struct(name: &syn::Ident, struct_: &syn::VariantData) -> quote::Tok
         &syn::VariantData::Tuple(ref fields) => {
             let gen = TupleFieldsGenerator { fields };
             return quote! {
-                impl Diff for #name {
-                    fn diff<'a>(&'a self, other: &'a #name) -> Option<Vec<Difference<'a>>> {
+                impl ::struct_diff::Diff for #name {
+                    fn diff<'a>(&'a self, other: &'a #name) -> Option<Vec<::struct_diff::Difference<'a>>> {
                         let mut diffs = Vec::new();
                         #gen
                         if diffs.len() > 0 {
