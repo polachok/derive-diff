@@ -186,6 +186,7 @@ fn impl_diff_enum(name: &syn::Ident, variants: &[syn::Variant]) -> quote::Tokens
     }
     return quote! {
         impl ::struct_diff::Diff for #name {
+            type Value = #name;
 
             #[allow(unreachable_patterns)]
             fn diff<'a>(&'a self, other: &'a #name) -> Option<Vec<::struct_diff::Difference<'a>>> {
@@ -245,6 +246,8 @@ fn impl_diff_struct(name: &syn::Ident, struct_: &syn::VariantData) -> quote::Tok
             let gen = StructGenerator { fields };
             return quote! {
                 impl ::struct_diff::Diff for #name {
+                    type Value = #name;
+
                     fn diff<'a>(&'a self, other: &'a #name) -> Option<Vec<::struct_diff::Difference<'a>>> {
                         let mut diffs = Vec::new();
                         #gen
@@ -260,6 +263,8 @@ fn impl_diff_struct(name: &syn::Ident, struct_: &syn::VariantData) -> quote::Tok
             let gen = TupleFieldsGenerator { fields };
             return quote! {
                 impl ::struct_diff::Diff for #name {
+                    type Value = #name;
+
                     fn diff<'a>(&'a self, other: &'a #name) -> Option<Vec<::struct_diff::Difference<'a>>> {
                         let mut diffs = Vec::new();
                         #gen
