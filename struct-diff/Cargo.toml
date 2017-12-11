@@ -9,4 +9,5 @@ repository = "https://github.com/polachok/derive-diff"
 keywords = ["diff"]
 
 [dependencies]
+boolinator = "2.4"
 chrono = { version = "0.4", features = ["serde"] }
